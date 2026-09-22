@@ -1,3 +1,5 @@
+import Typewriter from "@/components/Typewriter";
+
 export default function Hero() {
   return (
     <section className="flex min-h-[calc(100vh-88px)] flex-col px-6 pb-6">
@@ -19,11 +21,10 @@ export default function Hero() {
             <span className="opacity-40">→</span>
 
             <p>
-                A collection of things
-                <br />
-                I&apos;ve built, designed,
-                <br />
-                broken and learned from.
+                <Typewriter
+          text="this is my portfolio. unfortunately."
+          speed={70}
+        />
             </p>
             </div>
 
@@ -35,8 +36,6 @@ export default function Hero() {
                 computer engineering student
                 <br />
                 based in Chile
-                <br />
-                currently making things
             </p>
             </div>
 

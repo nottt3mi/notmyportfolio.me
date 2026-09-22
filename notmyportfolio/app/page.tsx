@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero"
+import Hero from "@/components/Hero";
+import About from "@/components/About";
+import WorkSection from "@/components/WorkSection";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f4f3ef] text-[#111]">
+    <main className="min-h-screen">
       <Navbar />
       <Hero />
     </main>
