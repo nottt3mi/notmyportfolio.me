@@ -1,18 +1,18 @@
 export default function Hero() {
   return (
     <section className="flex min-h-[calc(100vh-88px)] flex-col px-6 pb-6">
-        <div className="max-w-6xl pt-24">
-            <h1 className="text-[clamp(3rem,7vw,7rem)] font-medium leading-[0.82] tracking-[-0.07em]">
-            THIS IS
-            <br />
-            NOT MY
-            <br />
-            PORTFOLIO.
+        <div className="flex flex-1 items-center">
+            <h1 className="text-left text-[clamp(3rem,7vw,7rem)] font-medium leading-[0.82] tracking-[-0.07em]">
+                THIS IS
+                <br />
+                NOT MY
+                <br />
+                PORTFOLIO.
             </h1>
         </div>
 
         {/* Bottom information */}
-        <div className="mt-auto flex flex-col gap-10 md:flex-row md:items-end md:justify-between p-6">
+        <div className="mt-auto flex flex-col gap-10 md:flex-row md:items-end md:justify-between pb-6">
             
             {/* Left */}
             <div className="flex items-start gap-4 font-mono text-sm leading-relaxed">
@@ -28,7 +28,7 @@ export default function Hero() {
             </div>
 
             {/* Right */}
-            <div className="text-left font-mono text-sm leading-relaxed md:text-right">
+            <div className="text-left font-mono text-sm leading-relaxed md:text-right px-6">
             <p>
                 Emiliano García
                 <br />

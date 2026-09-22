@@ -1,9 +1,15 @@
 export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between px-6 py-6">
-      <span className="font-medium">notmyportfolio.me</span>
-
+    <nav className="flex items-center justify-between px-6 py-5">
+      <a href="/" className="font-medium">notmyportfolio.me</a>
+        
       <div className="flex items-center gap-8 font-mono text-xs">
+        <a href="/" className="group">
+          <span className="opacity-40 group-hover:opacity-100">[</span>
+          <span className="mx-1">HOME</span>
+          <span className="opacity-40 group-hover:opacity-100">]</span>
+        </a>
+        
         <a href="#work" className="group">
           <span className="opacity-40 group-hover:opacity-100">[</span>
           <span className="mx-1">work</span>
@@ -16,7 +22,7 @@ export default function Navbar() {
           <span className="opacity-40 group-hover:opacity-100">]</span>
         </a>
 
-        <a href="#about" className="group">
+        <a href="/about" className="group">
           <span className="opacity-40 group-hover:opacity-100">[</span>
           <span className="mx-1">about</span>
           <span className="opacity-40 group-hover:opacity-100">]</span>
