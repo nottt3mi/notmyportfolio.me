@@ -63,6 +63,16 @@ export default function Navbar() {
             </span>
           </a>
 
+          <a href="/log" className="group">
+            <span className="opacity-40 transition-opacity group-hover:opacity-100">
+              [
+            </span>
+            <span className="mx-1">log</span>
+            <span className="opacity-40 transition-opacity group-hover:opacity-100">
+              ]
+            </span>
+          </a>
+
           <a
             href="https://www.linkedin.com/in/emiliano-garcia-olmos"
             target="_blank"
@@ -72,9 +82,7 @@ export default function Navbar() {
             <span className="opacity-40 transition-opacity group-hover:opacity-100">
               [
             </span>
-
             <span className="mx-1">↗</span>
-
             <span className="opacity-40 transition-opacity group-hover:opacity-100">
               ]
             </span>
@@ -85,16 +93,14 @@ export default function Navbar() {
         <button
           type="button"
           onClick={toggleMenu}
-          className="relative z-[110] font-mono text-xs pointer-events-auto md:hidden"
+          className="relative z-[110] pointer-events-auto font-mono text-xs md:hidden"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
         >
           <span className="opacity-40">[</span>
-
           <span className="mx-1">
             {menuOpen ? "CLOSE" : "MENU"}
           </span>
-
           <span className="opacity-40">]</span>
         </button>
       </nav>
@@ -115,11 +121,9 @@ export default function Navbar() {
             className="group py-2"
           >
             <span className="mr-2 opacity-30">[</span>
-
             <span className="transition-opacity group-hover:opacity-50">
               HOME
             </span>
-
             <span className="ml-2 opacity-30">]</span>
           </a>
 
@@ -129,11 +133,9 @@ export default function Navbar() {
             className="group py-2"
           >
             <span className="mr-2 opacity-30">[</span>
-
             <span className="transition-opacity group-hover:opacity-50">
               WORK
             </span>
-
             <span className="ml-2 opacity-30">]</span>
           </a>
 
@@ -143,11 +145,21 @@ export default function Navbar() {
             className="group py-2"
           >
             <span className="mr-2 opacity-30">[</span>
-
             <span className="transition-opacity group-hover:opacity-50">
               ABOUT
             </span>
+            <span className="ml-2 opacity-30">]</span>
+          </a>
 
+          <a
+            href="/log"
+            onClick={closeMenu}
+            className="group py-2"
+          >
+            <span className="mr-2 opacity-30">[</span>
+            <span className="transition-opacity group-hover:opacity-50">
+              LOG
+            </span>
             <span className="ml-2 opacity-30">]</span>
           </a>
 
@@ -159,11 +171,9 @@ export default function Navbar() {
             className="group py-2"
           >
             <span className="mr-2 opacity-30">[</span>
-
             <span className="transition-opacity group-hover:opacity-50">
               LINKEDIN ↗
             </span>
-
             <span className="ml-2 opacity-30">]</span>
           </a>
         </nav>
@@ -175,7 +185,7 @@ export default function Navbar() {
           </span>
 
           <span className="opacity-40">
-            © {new Date().getFullYear()}
+            © 2026
           </span>
         </div>
       </div>

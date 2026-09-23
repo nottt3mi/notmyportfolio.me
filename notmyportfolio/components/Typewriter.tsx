@@ -6,6 +6,7 @@ interface TypewriterProps {
   text: string;
   speed?: number;
   delay?: number;
+  pauseAfterPeriod?: number;
   className?: string;
 }
 
@@ -13,40 +14,41 @@ export default function Typewriter({
   text,
   speed = 80,
   delay = 0,
+  pauseAfterPeriod = 800,
   className = "",
 }: TypewriterProps) {
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    let interval: ReturnType<typeof setInterval>;
+    let index = 0;
+    let timeoutId: NodeJS.Timeout;
 
-    setDisplayedText("");
+    const typeNextCharacter = () => {
+      if (index >= text.length) return;
 
-    timeout = setTimeout(() => {
-      let index = 0;
+      const nextCharacter = text[index];
+      index++;
 
-      interval = setInterval(() => {
-        index++;
+      setDisplayedText(text.slice(0, index));
 
-        setDisplayedText(text.slice(0, index));
+      // Si acaba de escribir un punto, hacemos una pausa más larga
+      const nextDelay =
+        nextCharacter === "." || nextCharacter === "!"
+          ? pauseAfterPeriod
+          : speed;
 
-        if (index >= text.length) {
-          clearInterval(interval);
-        }
-      }, speed);
-    }, delay);
-
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(interval);
+      timeoutId = setTimeout(typeNextCharacter, nextDelay);
     };
-  }, [text, speed, delay]);
+
+    timeoutId = setTimeout(typeNextCharacter, delay);
+
+    return () => clearTimeout(timeoutId);
+  }, [text, speed, delay, pauseAfterPeriod]);
 
   return (
     <span className={className}>
       {displayedText}
-      <span className="ml-[1px] animate-pulse">|</span>
+      <span className="typewriter-cursor">|</span>
     </span>
   );
 }
