@@ -1,4 +1,7 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
+import { useEffect, useState } from "react";
 
 const HANDLE = "nottt3mi";
 
@@ -38,141 +41,142 @@ type Stats = {
   problemsSolved: number;
 };
 
-type CodeforcesData = {
-  stats: Stats;
-  problems: Problem[];
-};
+export default function LogPage() {
+  const [stats, setStats] = useState<Stats>({
+    rating: null,
+    maxRating: null,
+    problemsSolved: 0,
+  });
 
-async function getCodeforcesData(): Promise<CodeforcesData> {
-  try {
-    /*
-     * Codeforces user.info
-     */
-    const userResponse = await fetch(
-      `https://codeforces.com/api/user.info?handles=${HANDLE}`,
-      {
-        cache: "no-store",
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function getCodeforcesData() {
+      try {
+        const [userResponse, submissionsResponse] =
+          await Promise.all([
+            fetch(
+              `https://codeforces.com/api/user.info?handles=${HANDLE}`
+            ),
+            fetch(
+              `https://codeforces.com/api/user.status?handle=${HANDLE}`
+            ),
+          ]);
+
+        if (!userResponse.ok) {
+          throw new Error(
+            `Codeforces user.info returned ${userResponse.status}`
+          );
+        }
+
+        if (!submissionsResponse.ok) {
+          throw new Error(
+            `Codeforces user.status returned ${submissionsResponse.status}`
+          );
+        }
+
+        const userData = await userResponse.json();
+        const submissionsData = await submissionsResponse.json();
+
+        if (userData.status !== "OK") {
+          throw new Error(
+            userData.comment || "Codeforces user.info failed"
+          );
+        }
+
+        if (submissionsData.status !== "OK") {
+          throw new Error(
+            submissionsData.comment || "Codeforces user.status failed"
+          );
+        }
+
+        const user: CodeforcesUser = userData.result[0];
+
+        const submissions: CodeforcesSubmission[] =
+          submissionsData.result;
+
+        /*
+         * Keep only accepted problems.
+         *
+         * If the same problem was solved multiple times,
+         * only one entry will be displayed.
+         */
+        const solvedProblems = new Map<string, Problem>();
+
+        for (const submission of submissions) {
+          if (
+            submission.verdict !== "OK" ||
+            !submission.problem?.contestId
+          ) {
+            continue;
+          }
+
+          const problemId = `${submission.problem.contestId}-${submission.problem.index}`;
+
+          if (solvedProblems.has(problemId)) {
+            continue;
+          }
+
+          const date = new Date(
+            submission.creationTimeSeconds * 1000
+          );
+
+          const formattedDate = date
+            .toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })
+            .toUpperCase();
+
+          solvedProblems.set(problemId, {
+            id: problemId,
+            date: formattedDate,
+            name: submission.problem.name,
+            code: `${submission.problem.contestId}${submission.problem.index}`,
+            contest: "Codeforces",
+            difficulty: submission.problem.rating
+              ? String(submission.problem.rating)
+              : "—",
+            tags: submission.problem.tags,
+            status: "Solved",
+          });
+        }
+
+        const problems = Array.from(
+          solvedProblems.values()
+        );
+
+        /*
+         * user.status returns submissions from newest
+         * to oldest, so the problems are already ordered
+         * from most recent to oldest.
+         */
+        setProblems(problems);
+
+        setStats({
+          rating: user.rating ?? null,
+          maxRating: user.maxRating ?? null,
+          problemsSolved: problems.length,
+        });
+      } catch (error) {
+        console.error("Codeforces:", error);
+
+        setStats({
+          rating: null,
+          maxRating: null,
+          problemsSolved: 0,
+        });
+
+        setProblems([]);
+      } finally {
+        setLoading(false);
       }
-    );
-
-    if (!userResponse.ok) {
-      throw new Error(
-        `Codeforces user.info returned ${userResponse.status}`
-      );
     }
 
-    const userData = await userResponse.json();
-
-    if (userData.status !== "OK") {
-      throw new Error(
-        userData.comment || "Codeforces user.info failed"
-      );
-    }
-
-    const user: CodeforcesUser = userData.result[0];
-
-    /*
-     * Codeforces user.status
-     */
-    const submissionsResponse = await fetch(
-      `https://codeforces.com/api/user.status?handle=${HANDLE}`,
-      {
-        cache: "no-store",
-      }
-    );
-
-    if (!submissionsResponse.ok) {
-      throw new Error(
-        `Codeforces user.status returned ${submissionsResponse.status}`
-      );
-    }
-
-    const submissionsData = await submissionsResponse.json();
-
-    if (submissionsData.status !== "OK") {
-      throw new Error(
-        submissionsData.comment || "Codeforces user.status failed"
-      );
-    }
-
-    const submissions: CodeforcesSubmission[] =
-      submissionsData.result;
-
-    /*
-     * Keep only accepted submissions.
-     *
-     * A problem can have multiple accepted submissions,
-     * so we use a Map to keep only one entry per problem.
-     */
-    const solvedProblems = new Map<string, Problem>();
-
-    for (const submission of submissions) {
-      if (
-        submission.verdict !== "OK" ||
-        !submission.problem?.contestId
-      ) {
-        continue;
-      }
-
-      const problemId = `${submission.problem.contestId}-${submission.problem.index}`;
-
-      // Skip if we already have this problem
-      if (solvedProblems.has(problemId)) {
-        continue;
-      }
-
-      const date = new Date(
-        submission.creationTimeSeconds * 1000
-      );
-
-      const formattedDate = date
-        .toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
-        .toUpperCase();
-
-      solvedProblems.set(problemId, {
-        id: problemId,
-        date: formattedDate,
-        name: submission.problem.name,
-        code: `${submission.problem.contestId}${submission.problem.index}`,
-        contest: "Codeforces",
-        difficulty: submission.problem.rating
-          ? String(submission.problem.rating)
-          : "—",
-        tags: submission.problem.tags,
-        status: "Solved",
-      });
-    }
-
-    const problems = Array.from(solvedProblems.values());
-
-    return {
-      stats: {
-        rating: user.rating ?? null,
-        maxRating: user.maxRating ?? null,
-        problemsSolved: problems.length,
-      },
-      problems,
-    };
-  } catch (error) {
-    console.error("Codeforces:", error);
-
-    return {
-      stats: {
-        rating: null,
-        maxRating: null,
-        problemsSolved: 0,
-      },
-      problems: [],
-    };
-  }
-}
-
-export default async function LogPage() {
-  const { stats, problems } = await getCodeforcesData();
+    getCodeforcesData();
+  }, []);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -182,8 +186,8 @@ export default async function LogPage() {
       <section className="px-6 md:px-10 lg:px-16 pt-32 pb-3 flex flex-col justify-between">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
           <p className="text-xl md:text-2xl leading-[1.15] tracking-tight max-w-2xl">
-            I decided to solve one competitive programming problem every week.
-            This is just a log.
+            I decided to solve one competitive programming problem
+            every week. This is just a log.
           </p>
 
           <div className="md:text-right text-sm leading-relaxed opacity-60">
@@ -226,22 +230,38 @@ export default async function LogPage() {
 
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 border-t border-foreground/20">
             <Stat
-              value={stats.rating ?? "—"}
+              value={
+                loading
+                  ? "—"
+                  : stats.rating ?? "—"
+              }
               label="Current rating"
             />
 
             <Stat
-              value={stats.maxRating ?? "—"}
+              value={
+                loading
+                  ? "—"
+                  : stats.maxRating ?? "—"
+              }
               label="Max rating"
             />
 
             <Stat
-              value={stats.problemsSolved}
+              value={
+                loading
+                  ? "—"
+                  : stats.problemsSolved
+              }
               label="Problems solved"
             />
 
             <Stat
-              value={problems.length}
+              value={
+                loading
+                  ? "—"
+                  : problems.length
+              }
               label="Logged problems"
             />
           </div>
@@ -266,8 +286,9 @@ export default async function LogPage() {
               </h2>
 
               <p className="mt-8 text-lg leading-relaxed opacity-60 max-w-xl">
-                I'm keeping the code for every problem in a public GitHub
-                repository so the progress can be followed over time.
+                I'm keeping the code for every problem in a public
+                GitHub repository so the progress can be followed over
+                time.
               </p>
 
               <a
@@ -293,7 +314,11 @@ export default async function LogPage() {
         </div>
 
         <div className="mt-10">
-          {problems.length === 0 ? (
+          {loading ? (
+            <p className="py-8 text-sm opacity-50">
+              Loading problems...
+            </p>
+          ) : problems.length === 0 ? (
             <p className="py-8 text-sm opacity-50">
               No problems found.
             </p>
@@ -349,14 +374,17 @@ function ProblemRow({
 }: {
   problem: Problem;
 }) {
+  const [contestId, problemIndex] =
+    problem.id.split("-");
+
   return (
     <article className="group border-b border-foreground/20 py-8">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-        {/* PROBLEM */}
+        {/* CONTEST ID */}
         <div className="md:col-span-1">
           <p className="text-sm opacity-40">
-            {problem.id.split("-")[0]}
+            {contestId}
           </p>
         </div>
 
@@ -403,7 +431,7 @@ function ProblemRow({
         {/* ARROW */}
         <div className="md:col-span-1 md:text-right">
           <a
-            href={`https://codeforces.com/problemset/problem/${problem.id.split("-")[0]}/${problem.id.split("-")[1]}`}
+            href={`https://codeforces.com/problemset/problem/${contestId}/${problemIndex}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-xl opacity-30 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1"
@@ -412,7 +440,6 @@ function ProblemRow({
             ↗
           </a>
         </div>
-
       </div>
     </article>
   );
