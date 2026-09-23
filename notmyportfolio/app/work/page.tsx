@@ -1,6 +1,8 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import WorkPageMobile from "@/components/mobile/WorkPageMobile";
+
 import { useEffect, useRef, useState } from "react";
 
 import WorkSlide, {
@@ -134,90 +136,101 @@ export default function WorkPage() {
   }, []);
 
   return (
-    <main className="min-h-screen">
-      <Navbar />
-      <div className="relative h-screen overflow-hidden">
-        {/* LEFT SIDEBAR */}
-        <aside className="fixed left-0 z-20 flex h-screen w-[280px] flex-col justify-between border-r border-black/10 px-8 py-8">
-          {/* Top */}
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs">
-                /work
-              </span>
-
-              <span className="font-mono text-[10px] opacity-40">
-                {String(activeProject + 1).padStart(2, "0")} /{" "}
-                {String(projects.length).padStart(2, "0")}
-              </span>
-            </div>
-
-            {/* Folder */}
-            <div className="mt-16">
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-xs">
-                  ↓
+    <>
+    {/* Desktop */}
+    <main className="min-h-screen hidden md:block">
+        <Navbar />
+        <div className="relative h-screen overflow-hidden">
+          {/* LEFT SIDEBAR */}
+          <aside className="fixed left-0 z-20 flex h-screen w-[280px] flex-col justify-between border-r border-black/10 px-8 py-8">
+            {/* Top */}
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs">
+                  /work
                 </span>
 
-                <span className="font-mono text-[11px] uppercase tracking-wide opacity-50">
-                  projects
+                <span className="font-mono text-[10px] opacity-40">
+                  {String(activeProject + 1).padStart(2, "0")} /{" "}
+                  {String(projects.length).padStart(2, "0")}
                 </span>
               </div>
 
-              <nav className="flex flex-col">
-                {projects.map((project, index) => {
-                  const active = index === activeProject;
+              {/* Folder */}
+              <div className="mt-16">
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-xs">
+                    ↓
+                  </span>
 
-                  return (
-                    <button
-                      key={project.id}
-                      onClick={() => goToProject(index)}
-                      className={`
-                        group flex items-center gap-3
-                        py-2 text-left
-                        font-mono text-xs
-                        transition-opacity duration-300
-                        ${
-                          active
-                            ? "opacity-100"
-                            : "opacity-35 hover:opacity-70"
-                        }
-                      `}
-                    >
-                      <span className="w-3">
-                        {active ? "●" : " "}
-                      </span>
+                  <span className="font-mono text-[11px] uppercase tracking-wide opacity-50">
+                    projects
+                  </span>
+                </div>
 
-                      <span>
-                        {project.number}_{project.id}
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
+                <nav className="flex flex-col">
+                  {projects.map((project, index) => {
+                    const active = index === activeProject;
+
+                    return (
+                      <button
+                        key={project.id}
+                        onClick={() => goToProject(index)}
+                        className={`
+                          group flex items-center gap-3
+                          py-2 text-left
+                          font-mono text-xs
+                          transition-opacity duration-300
+                          ${
+                            active
+                              ? "opacity-100"
+                              : "opacity-35 hover:opacity-70"
+                          }
+                        `}
+                      >
+                        <span className="w-3">
+                          {active ? "●" : " "}
+                        </span>
+
+                        <span>
+                          {project.number}_{project.id}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
             </div>
-          </div>
 
-          {/* Bottom */}
-          <div className="font-mono text-[10px] leading-relaxed opacity-40">
-            <div>SCROLL TO NAVIGATE</div>
-            <div>CLICK TO SELECT</div>
-          </div>
-        </aside>
+            {/* Bottom */}
+            <div className="font-mono text-[10px] leading-relaxed opacity-40">
+              <div>SCROLL TO NAVIGATE</div>
+              <div>CLICK TO SELECT</div>
+            </div>
+          </aside>
 
-        {/* RIGHT CONTENT */}
-        <section className="relative ml-[280px] h-screen">
-          {projects.map((project, index) => (
-            <WorkSlide
-              key={project.id}
-              project={project}
-              active={index === activeProject}
-              direction={direction}
-            />
-          ))}
-        </section>
-      </div>
-      
+          {/* RIGHT CONTENT */}
+          <section className="relative ml-[280px] h-screen">
+            {projects.map((project, index) => (
+              <WorkSlide
+                key={project.id}
+                project={project}
+                active={index === activeProject}
+                direction={direction}
+              />
+            ))}
+          </section>
+        </div>
+        
     </main>
+
+    {/* MObile */}
+    <main className="min-h-screen md:hidden">
+      <Navbar />
+      <WorkPageMobile projects={projects} />
+    </main>
+    
+          
+    </>
   );
 }
