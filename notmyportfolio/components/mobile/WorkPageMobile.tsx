@@ -10,46 +10,33 @@ export default function WorkPageMobile({
   projects,
 }: WorkPageMobileProps) {
   return (
-    <main className="block bg-background md:hidden">
-      {/* Header */}
-      <header className="px-6 pb-10 pt-28">
-        <div className="flex items-end justify-between border-b border-black/10 pb-4">
-          <h1 className="text-5xl font-medium tracking-tight">
-            Work
-          </h1>
+    <main className="h-[100svh] overflow-y-auto snap-y snap-mandatory bg-background md:hidden">
+      {projects.map((project) => (
+        <section
+          key={project.id}
+          className="relative flex h-[100svh] w-full snap-start snap-always flex-col justify-between px-6 pb-8 pt-24"
+        >
+          {/* Top */}
+          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
+            <span className="opacity-40">
+              {project.number}
+            </span>
 
-          <span className="font-mono text-xs opacity-40">
-            {String(projects.length).padStart(2, "0")}
-          </span>
-        </div>
-      </header>
+            <span className="opacity-40">
+              {project.year}
+            </span>
+          </div>
 
-      {/* Projects */}
-      <section>
-        {projects.map((project, index) => (
-          <article
-            key={project.id}
-            className="px-6 pb-24"
-          >
-            {/* Project number / year */}
-            <div className="mb-5 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
-              <span className="opacity-40">
-                {project.number}
-              </span>
-
-              <span className="opacity-40">
-                {project.year}
-              </span>
-            </div>
-
-            {/* Image */}
+          {/* Center */}
+          <div className="flex flex-1 flex-col justify-center">
+            {/* Project image */}
             <a
               href={project.href}
               target="_blank"
               rel="noopener noreferrer"
               className="group block"
             >
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-black/5">
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[420px] overflow-hidden bg-foreground/5">
                 <img
                   src={project.image}
                   alt={project.title}
@@ -58,15 +45,15 @@ export default function WorkPageMobile({
               </div>
             </a>
 
-            {/* Project info */}
+            {/* Information */}
             <div className="mt-6">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-end justify-between gap-4">
                 <div>
                   <h2 className="text-4xl font-medium tracking-tight">
                     {project.title}
                   </h2>
 
-                  <p className="mt-2 font-mono text-[10px] leading-relaxed opacity-50">
+                  <p className="mt-2 max-w-[280px] font-mono text-[9px] leading-relaxed tracking-wide opacity-50">
                     {project.category}
                   </p>
                 </div>
@@ -76,37 +63,31 @@ export default function WorkPageMobile({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Visit ${project.title}`}
-                  className="text-xl transition-transform duration-300 active:translate-x-1 active:-translate-y-1"
+                  className="mb-1 text-2xl"
                 >
                   ↗
                 </a>
               </div>
 
-              <p className="mt-5 max-w-sm text-sm leading-relaxed opacity-60">
+              <p className="mt-4 max-w-[330px] text-sm leading-relaxed opacity-60">
                 {project.description}
               </p>
             </div>
+          </div>
 
-            {/* Divider */}
-            {index < projects.length - 1 && (
-              <div className="mt-16 border-b border-black/10" />
-            )}
-          </article>
-        ))}
-      </section>
+          {/* Bottom */}
+          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
+            <span className="opacity-30">
+              {project.number} /{" "}
+              {String(projects.length).padStart(2, "0")}
+            </span>
 
-      {/* Footer */}
-      <footer className="border-t border-black/10 px-6 py-10">
-        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
-          <span className="opacity-40">
-            End of work
-          </span>
-
-          <span className="opacity-40">
-            ↓
-          </span>
-        </div>
-      </footer>
+            <span className="opacity-30">
+              {project.number === "01" ? "Swipe ↓" : "Scroll ↓"}
+            </span>
+          </div>
+        </section>
+      ))}
     </main>
   );
 }
