@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <section className="flex min-h-[calc(100vh-88px)] flex-col px-6 pb-6">
         <div className="flex flex-1 items-center">
-            <h1 className="text-left text-[clamp(3rem,7vw,7rem)] font-medium leading-[0.82] tracking-[-0.07em]">
+            <h1 className="text-left text-[clamp(4rem,11vw,11rem)] font-medium leading-[0.82] tracking-[-0.07em]">
                 Things I
                 <br />
                 make

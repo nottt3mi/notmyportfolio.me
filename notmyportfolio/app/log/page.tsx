@@ -183,7 +183,7 @@ export default function LogPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="px-6 md:px-10 lg:px-16 pt-32 pb-3 flex flex-col justify-between">
+      <section className="px-6 pt-32 pb-3 flex flex-col justify-between">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
           <p className="text-xl md:text-2xl leading-[1.15] tracking-tight max-w-2xl">
             I decided to solve one competitive programming problem
@@ -199,7 +199,7 @@ export default function LogPage() {
       </section>
 
       {/* CODEFORCES STATS */}
-      <section className="px-6 md:px-10 lg:px-16 py-32">
+      <section className="px-6 py-32">
         <div className="flex items-baseline justify-between border-b border-foreground/20 pb-5">
           <h2 className="text-sm uppercase tracking-[0.2em]">
             Codeforces
@@ -269,7 +269,7 @@ export default function LogPage() {
       </section>
 
       {/* REPOSITORY */}
-      <section className="px-6 md:px-10 lg:px-16 py-10">
+      <section className="px-6 py-10">
         <div className="border-t border-foreground/20 pt-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
             <div className="md:col-span-4">
@@ -306,7 +306,7 @@ export default function LogPage() {
       </section>
 
       {/* PROBLEM LOG */}
-      <section className="px-6 md:px-10 lg:px-16 py-32">
+      <section className="px-6 py-32">
         <div className="flex items-baseline justify-between border-b border-foreground/20 pb-5">
           <h2 className="text-sm uppercase tracking-[0.2em]">
             Problem log
@@ -334,7 +334,7 @@ export default function LogPage() {
       </section>
 
       {/* END */}
-      <section className="h-[30vh] px-6 md:px-10 lg:px-16 flex items-end">
+      <section className="h-[30vh] px-6 flex items-end">
         <h2 className="text-[clamp(4rem,11vw,11rem)] leading-[0.78] tracking-[-0.08em]">
           See you
           <br />

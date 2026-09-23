@@ -9,13 +9,13 @@ export default function About() {
       <Navbar />
 
       {/* HERO */}
-      <section className="min-h-screen px-6 md:px-10 lg:px-16 pt-32 pb-20 flex flex-col justify-between">
+      <section className="min-h-screen px-6 pt-50 pb-20 flex flex-col justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.2em] opacity-50">
             About
           </p>
 
-          <h1 className="mt-8 max-w-6xl text-[clamp(4rem,11vw,11rem)] leading-[0.8] tracking-[-0.07em] font-medium">
+          <h1 className="mt-8 max-w-6xl text-[clamp(3rem,7vw,7rem)] leading-[0.8] tracking-[-0.07em] font-medium">
             A little bit
             <br />
             about me.
