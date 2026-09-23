@@ -2,19 +2,6 @@ import Navbar from "@/components/Navbar";
 
 const HANDLE = "nottt3mi";
 
-const problems = [
-  {
-    week: "01",
-    date: "23 SEP 2026",
-    name: "Way Too Long Words",
-    code: "71A",
-    contest: "Codeforces",
-    difficulty: "800",
-    tags: ["strings", "implementation"],
-    status: "Solved",
-  },
-];
-
 type CodeforcesUser = {
   handle: string;
   rating?: number;
@@ -23,6 +10,7 @@ type CodeforcesUser = {
 
 type CodeforcesSubmission = {
   id: number;
+  creationTimeSeconds: number;
   verdict?: string;
   problem: {
     contestId?: number;
@@ -33,13 +21,29 @@ type CodeforcesSubmission = {
   };
 };
 
+type Problem = {
+  id: string;
+  date: string;
+  name: string;
+  code: string;
+  contest: string;
+  difficulty: string;
+  tags: string[];
+  status: string;
+};
+
 type Stats = {
   rating: number | null;
   maxRating: number | null;
   problemsSolved: number;
 };
 
-async function getCodeforcesStats(): Promise<Stats> {
+type CodeforcesData = {
+  stats: Stats;
+  problems: Problem[];
+};
+
+async function getCodeforcesData(): Promise<CodeforcesData> {
   try {
     /*
      * Codeforces user.info
@@ -95,39 +99,80 @@ async function getCodeforcesStats(): Promise<Stats> {
       submissionsData.result;
 
     /*
-     * Count unique solved problems
+     * Keep only accepted submissions.
+     *
+     * A problem can have multiple accepted submissions,
+     * so we use a Map to keep only one entry per problem.
      */
-    const solvedProblems = new Set<string>();
+    const solvedProblems = new Map<string, Problem>();
 
     for (const submission of submissions) {
       if (
-        submission.verdict === "OK" &&
-        submission.problem?.contestId
+        submission.verdict !== "OK" ||
+        !submission.problem?.contestId
       ) {
-        solvedProblems.add(
-          `${submission.problem.contestId}-${submission.problem.index}`
-        );
+        continue;
       }
+
+      const problemId = `${submission.problem.contestId}-${submission.problem.index}`;
+
+      // Skip if we already have this problem
+      if (solvedProblems.has(problemId)) {
+        continue;
+      }
+
+      const date = new Date(
+        submission.creationTimeSeconds * 1000
+      );
+
+      const formattedDate = date
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
+        .toUpperCase();
+
+      solvedProblems.set(problemId, {
+        id: problemId,
+        date: formattedDate,
+        name: submission.problem.name,
+        code: `${submission.problem.contestId}${submission.problem.index}`,
+        contest: "Codeforces",
+        difficulty: submission.problem.rating
+          ? String(submission.problem.rating)
+          : "—",
+        tags: submission.problem.tags,
+        status: "Solved",
+      });
     }
 
+    const problems = Array.from(solvedProblems.values());
+
     return {
-      rating: user.rating ?? null,
-      maxRating: user.maxRating ?? null,
-      problemsSolved: solvedProblems.size,
+      stats: {
+        rating: user.rating ?? null,
+        maxRating: user.maxRating ?? null,
+        problemsSolved: problems.length,
+      },
+      problems,
     };
   } catch (error) {
     console.error("Codeforces:", error);
 
     return {
-      rating: null,
-      maxRating: null,
-      problemsSolved: 0,
+      stats: {
+        rating: null,
+        maxRating: null,
+        problemsSolved: 0,
+      },
+      problems: [],
     };
   }
 }
 
 export default async function LogPage() {
-  const stats = await getCodeforcesStats();
+  const { stats, problems } = await getCodeforcesData();
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -197,7 +242,7 @@ export default async function LogPage() {
 
             <Stat
               value={problems.length}
-              label="Weeks"
+              label="Logged problems"
             />
           </div>
         </div>
@@ -226,7 +271,7 @@ export default async function LogPage() {
               </p>
 
               <a
-                href="https://github.com/"
+                href="https://github.com/nottt3mi/cp-log"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 mt-10 text-sm uppercase tracking-[0.15em] border-b border-foreground/40 pb-2 hover:border-foreground transition-colors"
@@ -242,20 +287,24 @@ export default async function LogPage() {
       {/* PROBLEM LOG */}
       <section className="px-6 md:px-10 lg:px-16 py-32">
         <div className="flex items-baseline justify-between border-b border-foreground/20 pb-5">
-          <span className="text-sm opacity-50">03</span>
-
           <h2 className="text-sm uppercase tracking-[0.2em]">
             Problem log
           </h2>
         </div>
 
         <div className="mt-10">
-          {problems.map((problem) => (
-            <ProblemRow
-              key={problem.week}
-              problem={problem}
-            />
-          ))}
+          {problems.length === 0 ? (
+            <p className="py-8 text-sm opacity-50">
+              No problems found.
+            </p>
+          ) : (
+            problems.map((problem) => (
+              <ProblemRow
+                key={problem.id}
+                problem={problem}
+              />
+            ))
+          )}
         </div>
       </section>
 
@@ -298,29 +347,20 @@ function Stat({
 function ProblemRow({
   problem,
 }: {
-  problem: {
-    week: string;
-    date: string;
-    name: string;
-    code: string;
-    contest: string;
-    difficulty: string;
-    tags: string[];
-    status: string;
-  };
+  problem: Problem;
 }) {
   return (
     <article className="group border-b border-foreground/20 py-8">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-        {/* WEEK */}
+        {/* PROBLEM */}
         <div className="md:col-span-1">
           <p className="text-sm opacity-40">
-            {problem.week}
+            {problem.id.split("-")[0]}
           </p>
         </div>
 
-        {/* PROBLEM */}
+        {/* PROBLEM NAME */}
         <div className="md:col-span-5">
           <div className="flex items-baseline gap-3 flex-wrap">
             <h3 className="text-2xl md:text-3xl tracking-tight">
@@ -362,9 +402,15 @@ function ProblemRow({
 
         {/* ARROW */}
         <div className="md:col-span-1 md:text-right">
-          <span className="inline-block text-xl opacity-30 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1">
+          <a
+            href={`https://codeforces.com/problemset/problem/${problem.id.split("-")[0]}/${problem.id.split("-")[1]}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-xl opacity-30 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1"
+            aria-label={`Open ${problem.name}`}
+          >
             ↗
-          </span>
+          </a>
         </div>
 
       </div>
